@@ -1,10 +1,14 @@
-
 function PaginationControls({ page, totalPages, onPageChange }) {
   return (
     <nav className="mt-4">
       <ul className="pagination justify-content-center">
         <li className={`page-item ${page <= 1 ? "disabled" : ""}`}>
-          <button className="page-link" onClick={() => onPageChange(page - 1)}>Previous</button>
+          <button
+            className="page-link"
+            onClick={() => page > 1 && onPageChange(page - 1)}
+          >
+            Previous
+          </button>
         </li>
         <li className="page-item disabled">
           <span className="page-link">
@@ -12,7 +16,12 @@ function PaginationControls({ page, totalPages, onPageChange }) {
           </span>
         </li>
         <li className={`page-item ${page >= totalPages ? "disabled" : ""}`}>
-          <button className="page-link" onClick={() => onPageChange(page + 1)}>Next</button>
+          <button
+            className="page-link"
+            onClick={() => page < totalPages && onPageChange(page + 1)}
+          >
+            Next
+          </button>
         </li>
       </ul>
     </nav>

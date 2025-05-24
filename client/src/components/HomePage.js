@@ -1,26 +1,27 @@
+// Updated HomePage using TMDB API
 import { useEffect, useState } from "react";
 import MovieList from "./MovieList";
 import PaginationControls from "./PaginationControls";
 
 function HomePage() {
-  const [query, setQuery] = useState("classic");
+  const [query, setQuery] = useState("popular");
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const rowsPerPage = 10;
-
   const fetchMovies = async (searchQuery = query, pageNumber = page) => {
     if (!searchQuery.trim()) return;
     setLoading(true);
     try {
-      const res = await fetch(
-        `/api/search?query=${encodeURIComponent(searchQuery)}&page=${pageNumber}&rows=${rowsPerPage}`
-      );
+      const endpoint =
+        searchQuery === "popular"
+          ? `/api/popular?page=${pageNumber}`
+          : `/api/search?query=${encodeURIComponent(searchQuery)}&page=${pageNumber}`;
+      const res = await fetch(endpoint);
       const data = await res.json();
-      setMovies(data.docs);
-      setTotalPages(Math.ceil(data.total / rowsPerPage));
+      setMovies(data.results || []);
+      setTotalPages(data.total_pages || 1);
     } catch (error) {
       console.error("Fetch error:", error);
     }
@@ -28,7 +29,7 @@ function HomePage() {
   };
 
   useEffect(() => {
-    fetchMovies("classic", 1); // Trigger default search on load
+    fetchMovies("popular", 1); // Trigger default fetch on load
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -44,7 +45,7 @@ function HomePage() {
 
   return (
     <>
-      <h1 className="text-center mb-4">Public Domain Movie Downloader</h1>
+      <h1 className="text-center mb-4">Movie Browser (TMDB)</h1>
       <div className="input-group mb-4">
         <input
           type="text"

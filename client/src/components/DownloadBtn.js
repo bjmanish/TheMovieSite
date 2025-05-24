@@ -1,11 +1,8 @@
-
-function DownloadButton({ identifier }) {
-  const directLink = `https://archive.org/download/${identifier}/${identifier}.mp4`;
-
+function DownloadButton() {
   return (
-    <a className="btn btn-success btn-sm" href={directLink} download>
-      Download MP4
-    </a>
+    <button className="btn btn-secondary btn-sm" disabled>
+      Download Not Available
+    </button>
   );
 }
 
