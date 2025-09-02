@@ -1,34 +1,39 @@
 import axios from 'axios';
 
-const API_KEY = process.env.TMDB_API_KEY;
-const BASE_URL = 'https://api.themoviedb.org/3';
+// const ACCESS_TOKEN = import.meta.env.TMDB_ACCESS_TOKEN; // for Vite
+const ACCESS_TOKEN = process.env.TMDB_ACCESS_TOKEN; // for CRA (Create React App)
 
 const tmdb = axios.create({
-  baseURL: BASE_URL,
+  baseURL: 'https://api.themoviedb.org/3',
+  headers: {
+    Authorization: `Bearer ${ACCESS_TOKEN}`,
+  },
 });
 
+
 export const fetchTrendingMovies = async () => {
-  const res = await tmdb.get(`/trending/movie/week?api_key=${API_KEY}`);
+  const res = await tmdb.get('/trending/movie/week');
   return res.data.results;
 };
 
 export const fetchTopRatedMovies = async () => {
-  const res = await tmdb.get(`/movie/top_rated?api_key=${API_KEY}`);
+  const res = await tmdb.get('/movie/top_rated');
   return res.data.results;
 };
 
 export const fetchNewReleases = async () => {
-  const res = await tmdb.get(`/movie/now_playing?api_key=${API_KEY}`);
+  const res = await tmdb.get('/movie/now_playing');
   return res.data.results;
 };
 
 export const searchMovies = async (query) => {
-  const res = await tmdb.get(`/search/movie?query=${query}&api_key=${API_KEY}`);
+  const res = await tmdb.get(`/search/movie?query=${encodeURIComponent(query)}`);
+  if (res.data.results.length === 0) console.log("not found movies");
   return res.data.results;
 };
 
 export const getMovieDetails = async (id) => {
-  const res = await tmdb.get(`/movie/${id}?api_key=${API_KEY}&append_to_response=videos,credits`);
+  const res = await tmdb.get(`/movie/${id}?append_to_response=videos,credits`);
   return res.data;
 };
 

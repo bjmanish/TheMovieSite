@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { fetchTrendingMovies, fetchTopRatedMovies, fetchNewReleases } from '../services/tmdb';
 import MovieSlider from '../components/MovieSlider';
+import { fetchNewReleases, fetchTopRatedMovies, fetchTrendingMovies } from '../services/tmdb';
 
 export default function HomePage() {
   const [trending, setTrending] = useState([]);

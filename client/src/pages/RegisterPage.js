@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { login } from '../services/authServices';
+import { register } from '../services/authServices';
 
-const LoginPage = ({ setUser }) => {
+const RegisterPage = ({ setUser }) => {
   const [formData, setFormData] = useState({
+    username: '',
     email: '',
-    password: ''
+    password: '',
+    confirmPassword: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -19,17 +21,38 @@ const LoginPage = ({ setUser }) => {
     setError(''); // Clear error when user starts typing
   };
 
+  const validateForm = () => {
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return false;
+    }
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return false;
+    }
+    if (formData.username.length < 3) {
+      setError('Username must be at least 3 characters long');
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
     setError('');
 
     try {
-      const response = await login(formData.email, formData.password);
+      const response = await register(formData.username, formData.email, formData.password);
       setUser({ isAuthenticated: true, ...response.user });
       navigate('/');
     } catch (err) {
-      setError(err.message || 'Login failed. Please try again.');
+      setError(err.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -45,11 +68,11 @@ const LoginPage = ({ setUser }) => {
               <span className="text-white font-bold text-2xl">M</span>
             </div>
           </div>
-          <h2 className="text-3xl font-bold text-white mb-2">Welcome Back</h2>
-          <p className="text-white/60">Sign in to your account to continue</p>
+          <h2 className="text-3xl font-bold text-white mb-2">Join MovieSite</h2>
+          <p className="text-white/60">Create your account to get started</p>
         </div>
 
-        {/* Login Form */}
+        {/* Registration Form */}
         <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
@@ -62,6 +85,23 @@ const LoginPage = ({ setUser }) => {
                 </div>
               </div>
             )}
+
+            {/* Username Field */}
+            <div>
+              <label htmlFor="username" className="block text-sm font-medium text-white/80 mb-2">
+                Username
+              </label>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                required
+                value={formData.username}
+                onChange={handleChange}
+                className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors duration-200"
+                placeholder="Choose a username"
+              />
+            </div>
 
             {/* Email Field */}
             <div>
@@ -93,7 +133,24 @@ const LoginPage = ({ setUser }) => {
                 value={formData.password}
                 onChange={handleChange}
                 className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors duration-200"
-                placeholder="Enter your password"
+                placeholder="Create a password"
+              />
+            </div>
+
+            {/* Confirm Password Field */}
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-white/80 mb-2">
+                Confirm Password
+              </label>
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                required
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors duration-200"
+                placeholder="Confirm your password"
               />
             </div>
 
@@ -109,10 +166,10 @@ const LoginPage = ({ setUser }) => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Signing in...
+                  Creating account...
                 </div>
               ) : (
-                'Sign In'
+                'Create Account'
               )}
             </button>
           </form>
@@ -124,19 +181,18 @@ const LoginPage = ({ setUser }) => {
                 <div className="w-full border-t border-white/10"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-transparent text-white/40">Or continue with</span>
+                <span className="px-2 bg-transparent text-white/40">Already have an account?</span>
               </div>
             </div>
           </div>
 
-          {/* Demo Account */}
+          {/* Login Link */}
           <div className="text-center">
-            <p className="text-white/60 text-sm mb-4">Don't have an account?</p>
             <Link
-              to="/register"
+              to="/login"
               className="text-purple-400 hover:text-purple-300 font-medium transition-colors duration-200"
             >
-              Create an account
+              Sign in to your account
             </Link>
           </div>
         </div>
@@ -155,4 +211,4 @@ const LoginPage = ({ setUser }) => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;

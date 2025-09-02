@@ -1,133 +1,184 @@
-// import { Button } from '@/components/ui/button';
-// import { Card, CardContent } from '@/components/ui/card';
-// import { Input } from '@/components/ui/input';
-// import axios from 'axios';
-// import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import LoadingSpinner from '../components/LoadingSpinner';
+import MovieCard from '../components/MovieCard';
+import { getPopularMovies, getTopRatedMovies, getUpcomingMovies } from '../services/movieService';
 
-// const API_KEY = '2d468f680b00ee291f85357d557a5487';
-// const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-
-// export default function HomePage() {
-//   const [trending, setTrending] = useState([]);
-//   const [searchTerm, setSearchTerm] = useState('');
-
-//   useEffect(() => {
-//     axios
-//       .get(`${TMDB_BASE_URL}/trending/movie/week?api_key=${API_KEY}`)
-//       .then((res) => setTrending(res.data.results))
-//       .catch((err) => console.error(err));
-//   }, []);
-
-//   const filteredMovies = trending.filter((movie) =>
-//     movie.title.toLowerCase().includes(searchTerm.toLowerCase())
-//   );
-
-//   return (
-//     <div className="p-4">
-//       <h1 className="text-3xl font-bold mb-4">Trending Movies</h1>
-
-//       <Input
-//         type="text"
-//         placeholder="Search movies..."
-//         value={searchTerm}
-//         onChange={(e) => setSearchTerm(e.target.value)}
-//         className="mb-6 w-full max-w-md"
-//       />
-
-//       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-//         {filteredMovies.map((movie) => (
-//           <Card key={movie.id} className="rounded-2xl shadow-lg overflow-hidden">
-//             <img
-//               src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-//               alt={movie.title}
-//               className="w-full h-72 object-cover"
-//             />
-//             <CardContent className="p-2">
-//               <h2 className="text-lg font-semibold truncate">{movie.title}</h2>
-//               <p className="text-sm text-gray-500">{movie.release_date}</p>
-//               <Button className="mt-2 w-full">Details</Button>
-//             </CardContent>
-//           </Card>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }
-
-
-// Updated HomePage using TMDB API + JWT Auth Integration
-import { useEffect, useState } from "react";
-import MovieList from "../components/movieList";
-import PaginationControls from "../components/paginationControls";
-
-function HomePage() {
-  const [query, setQuery] = useState("popular");
-  const [movies, setMovies] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-
-  const fetchMovies = async (searchQuery = query, pageNumber = page) => {
-    if (!searchQuery.trim()) return;
-    setLoading(true);
-    try {
-      const token = localStorage.getItem("token");
-      const endpoint =
-        searchQuery === "popular"
-          ? `/api/popular?page=${pageNumber}`
-          : `/api/search?query=${encodeURIComponent(searchQuery)}&page=${pageNumber}`;
-
-      const res = await fetch(endpoint, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await res.json();
-      setMovies(data.results || []);
-      setTotalPages(data.total_pages || 1);
-    } catch (error) {
-      console.error("Fetch error:", error);
-    }
-    setLoading(false);
-  };
+const HomePage = () => {
+  const [popularMovies, setPopularMovies] = useState([]);
+  const [topRatedMovies, setTopRatedMovies] = useState([]);
+  const [upcomingMovies, setUpcomingMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchMovies("popular", 1); // Trigger default fetch on load
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const fetchMovies = async () => {
+      try {
+        setLoading(true);
+        const [popular, topRated, upcoming] = await Promise.all([
+          getPopularMovies(),
+          getTopRatedMovies(),
+          getUpcomingMovies()
+        ]);
+
+        if (popular.success) setPopularMovies(popular.data.results.slice(0, 6));
+        if (topRated.success) setTopRatedMovies(topRated.data.results.slice(0, 6));
+        if (upcoming.success) setUpcomingMovies(upcoming.data.results.slice(0, 6));
+      } catch (err) {
+        setError('Failed to load movies. Please try again later.');
+        console.error('Error fetching movies:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMovies();
   }, []);
 
-  useEffect(() => {
-    if (query) fetchMovies(query, page);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
-  const handleSearch = () => {
-    setPage(1);
-    fetchMovies(query, 1);
-  };
-
-  return (
-    <>
-      <h1 className="text-center mb-4">Movie Browser (TMDB)</h1>
-      <div className="input-group mb-4">
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Search for movies..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-        />
-        <button className="btn btn-primary" onClick={handleSearch} disabled={loading}>
-          {loading ? "Searching..." : "Search"}
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-red-400 text-xl mb-4">⚠️</div>
+        <h2 className="text-white text-2xl font-semibold mb-2">Oops! Something went wrong</h2>
+        <p className="text-white/60 mb-6">{error}</p>
+        <button 
+          onClick={() => window.location.reload()} 
+          className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors duration-200"
+        >
+          Try Again
         </button>
       </div>
-      <MovieList movies={movies} />
-      {totalPages > 1 && (
-        <PaginationControls page={page} totalPages={totalPages} onPageChange={setPage} />
-      )}
-    </>
+    );
+  }
+
+  return (
+    <div className="space-y-12">
+      {/* Hero Section */}
+      <section className="relative h-[70vh] rounded-2xl overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent z-10"></div>
+        
+        {popularMovies[0] && (
+          <img
+            src={`https://image.tmdb.org/t/p/original${popularMovies[0].backdrop_path}`}
+            alt={popularMovies[0].title}
+            className="w-full h-full object-cover"
+          />
+        )}
+        
+        <div className="absolute inset-0 z-20 flex items-center">
+          <div className="container mx-auto px-4">
+            <div className="max-w-2xl">
+              <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+                Discover Amazing Movies
+              </h1>
+              <p className="text-xl text-white/80 mb-8 leading-relaxed">
+                Explore the latest releases, top-rated films, and upcoming blockbusters. 
+                Your cinematic journey starts here.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link
+                  to="/search"
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 text-center"
+                >
+                  Browse Movies
+                </Link>
+                <Link
+                  to="/register"
+                  className="bg-white/10 hover:bg-white/20 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 text-center border border-white/20"
+                >
+                  Get Started
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Popular Movies Section */}
+      <section>
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-3xl font-bold text-white">Popular Movies</h2>
+          <Link
+            to="/search"
+            className="text-purple-400 hover:text-purple-300 transition-colors duration-200"
+          >
+            View All →
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+          {popularMovies.map((movie) => (
+            <MovieCard key={movie.id} movie={movie} />
+          ))}
+        </div>
+      </section>
+
+      {/* Top Rated Movies Section */}
+      <section>
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-3xl font-bold text-white">Top Rated</h2>
+          <Link
+            to="/search"
+            className="text-purple-400 hover:text-purple-300 transition-colors duration-200"
+          >
+            View All →
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+          {topRatedMovies.map((movie) => (
+            <MovieCard key={movie.id} movie={movie} />
+          ))}
+        </div>
+      </section>
+
+      {/* Upcoming Movies Section */}
+      <section>
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-3xl font-bold text-white">Coming Soon</h2>
+          <Link
+            to="/search"
+            className="text-purple-400 hover:text-purple-300 transition-colors duration-200"
+          >
+            View All →
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+          {upcomingMovies.map((movie) => (
+            <MovieCard key={movie.id} movie={movie} />
+          ))}
+        </div>
+      </section>
+
+      {/* Call to Action */}
+      <section className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-8 md:p-12 text-center">
+        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          Ready to Explore More?
+        </h2>
+        <p className="text-white/90 text-lg mb-8 max-w-2xl mx-auto">
+          Join thousands of movie enthusiasts and discover your next favorite film. 
+          Create an account to save your favorites and get personalized recommendations.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link
+            to="/register"
+            className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200"
+          >
+            Sign Up Free
+          </Link>
+          <Link
+            to="/search"
+            className="bg-white/10 hover:bg-white/20 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 border border-white/20"
+          >
+            Browse Movies
+          </Link>
+        </div>
+      </section>
+    </div>
   );
-}
+};
 
 export default HomePage;
