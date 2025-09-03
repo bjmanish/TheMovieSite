@@ -71,7 +71,7 @@ router.get('/popular', checkTMDBConfig, async (req, res) => {
 });
 
 // Search movies
-router.get('/search', async (req, res) => {
+router.get('/search',checkTMDBConfig, async (req, res) => {
   try {
   // const { query, page = 1 } = req.query;
   const query = req.query.query;
@@ -86,7 +86,7 @@ router.get('/search', async (req, res) => {
   // For now, return dummy data:
 
   res.json({
-    query,
+    query: "batman",
     results:[
       { id: 1, title: 'Avengers', year: 2005 },
       { id: 2, title: 'The Dark Knight', year: 2008 },

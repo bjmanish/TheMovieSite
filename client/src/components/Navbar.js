@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../services/authServices';
 
@@ -27,10 +27,10 @@ const Navbar = ({ user, setUser }) => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">M</span>
-            </div>
-            <span className="text-white font-bold text-xl">MovieSite</span>
+            <div className="w-40 h-14 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+              {/* <span className="text-white font-bold text-lg">TM</span> */}
+              <span className="text-white font-bold text-lg">TheMovieSite</span>
+            </div>            
           </Link>
 
           {/* Search Bar - Desktop */}
