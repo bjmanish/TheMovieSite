@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
@@ -95,7 +94,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-white/10 mt-8 pt-8 text-center">
           <p className="text-white/40 text-sm">
-            © 2024 MovieSite. All rights reserved. Powered by TMDB API.
+            © 2025 MovieSite. All rights reserved. Powered by TMDB API.
           </p>
         </div>
       </div>

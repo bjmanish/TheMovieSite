@@ -71,9 +71,10 @@ router.get('/popular', checkTMDBConfig, async (req, res) => {
 });
 
 // Search movies
-router.get('/search', checkTMDBConfig, async (req, res) => {
+router.get('/search', async (req, res) => {
   try {
-  const { query, page = 1 } = req.query;
+  // const { query, page = 1 } = req.query;
+  const query = req.query.query;
 
   if (!query) {
     return res.status(400).json({ 
@@ -82,15 +83,26 @@ router.get('/search', checkTMDBConfig, async (req, res) => {
     });
   }
 
-    const response = await requestWithFallback(
-      `${TMDB_BASE_URL}/search/movie`,
-      { query, page, language: 'en-US', include_adult: false }
-    );
+  // For now, return dummy data:
 
-    res.json({
-      success: true,
-      data: response.data
-    });
+  res.json({
+    query,
+    results:[
+      { id: 1, title: 'Avengers', year: 2005 },
+      { id: 2, title: 'The Dark Knight', year: 2008 },
+      
+    ],
+  });
+
+    // const response = await requestWithFallback(
+    //   `${TMDB_BASE_URL}/search/movie`,
+    //   { query, page, language: 'en-US', include_adult: false }
+    // );
+
+    // res.json({
+    //   success: true,
+    //   data: response.data
+    // });
   } catch (error) {
     const status = error.response?.status || 500;
     const details = error.response?.data || error.message;

@@ -1,10 +1,10 @@
 /* eslint-disable import/no-anonymous-default-export */
-/** @type {import('tailwindcss').Config} */
+// /** @type {import('tailwindcss').Config} */
 
-export default {
+module.exports = {
   content: [
-    "./index.html",
     "./src/**/*.{js,jsx,ts,tsx}",
+      "./index.html",
   ],
   theme: {
     extend: {},

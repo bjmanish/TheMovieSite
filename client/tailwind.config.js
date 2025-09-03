@@ -1,3 +1,6 @@
+// const autoprefixer = require('autoprefixer');
+// const tailwindConfig = require('./src/tailwind.config');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -7,7 +10,7 @@ module.exports = {
   theme: {
     extend: {}
   },
-  plugins: []
+  plugins: [],
 };
 
 
