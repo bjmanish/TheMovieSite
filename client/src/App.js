@@ -10,13 +10,14 @@ import './index.css';
 // Pages
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
-import MovieDetailPage from './pages/MovieDetailPage';
+// import MovieDetails from './pages/movieDetails';
+import MovieDetails from './pages/MovieDetailPage';
 import ProfilePage from './pages/ProfilePage';
 import RegisterPage from './pages/RegisterPage';
 import SearchPage from './pages/SearchPage';
 
 // Services
-import { isAuthenticated } from './services/authServices';
+import { getProfile, isAuthenticated } from './services/authServices';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -28,8 +29,13 @@ function App() {
       try {
         const authenticated = isAuthenticated();
         if (authenticated) {
-          // You can fetch user profile here if needed
-          setUser({ isAuthenticated: true });
+          // Fetch user profile here
+          const profileRes = await getProfile();
+          if (profileRes.success && profileRes.user) {
+            setUser({ isAuthenticated: true, ...profileRes.user });
+          } else {
+            setUser({ isAuthenticated: true });
+          }
         }
       } catch (error) {
         console.error('Auth check failed:', error);
@@ -37,7 +43,6 @@ function App() {
         setIsLoading(false);
       }
     };
-
     checkAuth();
   }, []);
 
@@ -54,14 +59,14 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/search" element={<SearchPage />} />
-            <Route path="/movie/:id" element={<MovieDetailPage />} />
+            <Route path="/movie/:id" element={<MovieDetails />} />
             <Route path="/login" element={<LoginPage setUser={setUser} />} />
             <Route path="/register" element={<RegisterPage setUser={setUser} />} />
             <Route 
               path="/profile" 
               element={
                 user?.isAuthenticated ? (
-                  <ProfilePage user={user} />
+                  <ProfilePage user={user} setUser={setUser} />
                 ) : (
                   <Navigate to="/login" replace />
                 )

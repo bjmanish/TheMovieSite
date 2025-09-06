@@ -1,9 +1,22 @@
 import { apiClient, SERVER_ENDPOINTS } from '../config/api';
 
+function isLocalStorageAvailable() {
+  try {
+    const testKey = '__test__';
+    window.localStorage.setItem(testKey, testKey);
+    window.localStorage.removeItem(testKey);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 export const login = async (email, password) => {
   const res = await apiClient.post(SERVER_ENDPOINTS.AUTH.LOGIN, { email, password });
   if (res.data.success && res.data.token) {
-    localStorage.setItem('token', res.data.token);
+    if (typeof window !== 'undefined' && isLocalStorageAvailable()) {
+      localStorage.setItem('token', res.data.token);
+    }
     return res.data;
   }
   throw new Error(res.data.error || 'Login failed');
@@ -16,7 +29,9 @@ export const register = async (username, email, password) => {
     password 
   });
   if (res.data.success && res.data.token) {
-    localStorage.setItem('token', res.data.token);
+    if (typeof window !== 'undefined' && isLocalStorageAvailable()) {
+      localStorage.setItem('token', res.data.token);
+    }
     return res.data;
   }
   throw new Error(res.data.error || 'Registration failed');
@@ -33,14 +48,24 @@ export const verifyToken = async () => {
 };
 
 export const logout = () => {
-  localStorage.removeItem('token');
+  if (typeof window !== 'undefined' && isLocalStorageAvailable()) {
+    localStorage.removeItem('token');
+  }
 };
 
-export const getToken = () => localStorage.getItem('token');
+export const getToken = () => {
+  if (typeof window !== 'undefined' && isLocalStorageAvailable()) {
+    return localStorage.getItem('token');
+  }
+  return null;
+};
 
 export const isAuthenticated = () => {
-  const token = localStorage.getItem('token');
-  return !!token;
+  if (typeof window !== 'undefined' && isLocalStorageAvailable()) {
+    const token = localStorage.getItem('token');
+    return !!token;
+  }
+  return false;
 };
 
 // // services/authService.js

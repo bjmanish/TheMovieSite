@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../services/authServices';
 
@@ -29,7 +29,7 @@ const LoginPage = ({ setUser }) => {
       setUser({ isAuthenticated: true, ...response.user });
       navigate('/');
     } catch (err) {
-      setError(err.message || 'Login failed. Please try again.');
+      setError('Login failed. Please try again.' || err.message);
     } finally {
       setLoading(false);
     }

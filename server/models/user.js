@@ -7,7 +7,14 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   refreshToken: { type: String, default: null },
   watchlist: { type: [Number], default: [] }, // TMDB movie IDs
-  history: { type: [Number], default: [] }
+  history: { type: [Number], default: [] },
+  profilePicture: { type: String, default: null },
+  mobileNumber: { 
+    number: { type: String, default: null },
+    verified: { type: Boolean, default: false },
+    verificationCode: { type: String, default: null },
+    verificationExpiry: { type: Date, default: null }
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model('user', userSchema);

@@ -8,10 +8,11 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">M</span>
+              <div className="w-40 h-14 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                {/* <span className="text-white font-bold text-lg">M</span> */}
+              <span className="text-white font-bold text-xl">TheMovieSite</span>
               </div>
-              <span className="text-white font-bold text-xl">MovieSite</span>
+              
             </div>
             <p className="text-white/60 mb-4 max-w-md">
               Discover the latest movies, explore your favorites, and stay updated with the world of cinema. 

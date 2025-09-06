@@ -4,22 +4,14 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
-require('dotenv').config();
-const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
+const mongoose = require('mongoose');
 
-// Ensure JWT secret is present to avoid runtime 500s on auth routes
+// Set JWT secret if not provided
 if (!process.env.JWT_SECRET) {
-  console.warn('[WARN] JWT_SECRET is not set. Using a temporary development fallback. Set JWT_SECRET in server/.env for production.');
   process.env.JWT_SECRET = 'dev_fallback_secret_change_me';
+  console.warn('[WARN] JWT_SECRET is not set. Using a temporary development fallback.');
 }
-
-// Use the correct auth route (auth.js, not authRoutes.js)
-const authRoutes = require('./routes/auth');
-console.log('Loaded auth route: ./routes/auth.js');
-const movieRoutes = require('./routes/movies');
-const userRoutes = require('./routes/user');
-const { errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -62,33 +54,25 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Serve static files (profile pictures)
-app.use('/uploads', express.static('uploads'));
-
-// API routes
-app.use('/api/auth', authRoutes);
-app.use('/api/movies', movieRoutes);
-app.use('/api/user', userRoutes);
-
-// 404 handler (use a safe regexp instead of "*" to avoid path-to-regexp issues)
-app.use(/.*/, (req, res) => {
-  res.status(404).json({ 
-    error: 'Route not found',
-    path: req.originalUrl 
-  });
+// Test endpoint
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Server is working!' });
 });
 
-// Error handling middleware
-app.use(errorHandler);
-
-// Connect to MongoDB (optional in dev, but recommended)
+// Start server
 const startServer = async () => {
   try {
+    // Try to connect to MongoDB if URI is provided
     if (MONGO_URI) {
-      await mongoose.connect(MONGO_URI, { dbName: process.env.MONGO_DB || 'the_movie_site' });
-      console.log('🗄️  Connected to MongoDB');
+      try {
+        await mongoose.connect(MONGO_URI, { dbName: process.env.MONGO_DB || 'the_movie_site' });
+        console.log('🗄️  Connected to MongoDB');
+      } catch (mongoError) {
+        console.warn('[WARN] MongoDB connection failed:', mongoError.message);
+        console.warn('[WARN] Continuing without database...');
+      }
     } else {
-      console.warn('[WARN] MONGO_URI not set. Running without database. Set it in server/.env to enable persistence.');
+      console.warn('[WARN] MONGO_URI not set. Running without database.');
     }
 
     app.listen(PORT, () => {
@@ -103,5 +87,3 @@ const startServer = async () => {
 };
 
 startServer();
-
-module.exports = app;
