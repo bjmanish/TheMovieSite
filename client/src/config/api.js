@@ -20,6 +20,12 @@ export const SERVER_ENDPOINTS = {
     UPCOMING: `${API_BASE_URL}/movies/upcoming`,
     GENRES: `${API_BASE_URL}/movies/genres`,
     BY_GENRE: (genreId) => `${API_BASE_URL}/movies/genre/${genreId}`
+  },
+  WATCHLIST: {
+    ADD: `${API_BASE_URL}/watchlist/add`,
+    GET: `${API_BASE_URL}/watchlist`,
+    REMOVE: (movieId) => `${API_BASE_URL}/watchlist/remove/${movieId}`,
+    CHECK: (movieId) => `${API_BASE_URL}/watchlist/check/${movieId}`
   }
 };
 

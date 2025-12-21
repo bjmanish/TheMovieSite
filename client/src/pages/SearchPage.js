@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import MovieCard from '../components/MovieCard';
@@ -186,7 +186,7 @@ const SearchPage = () => {
           <div className="space-y-2 text-white/40">
             <p>Popular searches:</p>
             <div className="flex flex-wrap justify-center gap-2">
-              {['Avengers', 'Batman', 'Star Wars', 'Harry Potter', 'Marvel'].map((title) => (
+              {['Avengers', 'Batman', 'Star Wars', 'Harry Potter', 'Marvel', 'South Indian', 'Action', 'Love Story','Horror','Hindi Action','South Dubbed'].map((title) => (
                 <button
                   key={title}
                   onClick={() => setSearchQuery(title)}

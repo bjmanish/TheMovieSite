@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { sendMobileVerification, updateProfile, uploadProfilePicture, verifyMobileNumber } from '../services/userService';
-
 const ProfilePage = ({ user, setUser }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({

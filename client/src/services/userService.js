@@ -37,8 +37,12 @@ export const getUserProfile = async () => {
   const res = await apiClient.get('/user/me');
   return res.data;
 };
+export const getWatchlist = async () => {
+  const res = await apiClient.get('/user/watchlist');
+  return res.data;
+};
 
-// usage Example 
-// import { addToWatchlist, updateProfile, uploadProfilePicture } from '../services/userService';
-
-//<button onClick={() => addToWatchlist(movie.id)}>+ Watchlist</button>
+export const removeFromWatchlist = async (movieId) => {
+  const res = await apiClient.delete(`/user/watchlist/${movieId}`);
+  return res.data;
+};

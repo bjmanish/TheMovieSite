@@ -5,6 +5,7 @@ const { body, validationResult } = require('express-validator');
 const { auth } = require('../middleware/auth');
 const User = require('../models/user');
 
+
 const router = express.Router();
 
 const ACCESS_TOKEN_TTL = process.env.ACCESS_TOKEN_TTL || '15m';

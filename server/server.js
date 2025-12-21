@@ -1,107 +1,130 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
-const compression = require('compression');
-const rateLimit = require('express-rate-limit');
-require('dotenv').config();
-const mongoose = require('mongoose');
-const cookieParser = require('cookie-parser');
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import morgan from "morgan";
+import compression from "compression";
+import rateLimit from "express-rate-limit";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+import cookieParser from "cookie-parser";
 
-// Ensure JWT secret is present to avoid runtime 500s on auth routes
-if (!process.env.JWT_SECRET) {
-  console.warn('[WARN] JWT_SECRET is not set. Using a temporary development fallback. Set JWT_SECRET in server/.env for production.');
-  process.env.JWT_SECRET = 'dev_fallback_secret_change_me';
-}
+// Routes (ESM)
+import authRoutes from "./routes/auth.js";
+import movieRoutes from "./routes/movies.js";
+import userRoutes from "./routes/user.js";
+import watchlistRoutes from "./routes/watchlist.js";
 
-// Use the correct auth route (auth.js, not authRoutes.js)
-const authRoutes = require('./routes/auth');
-console.log('Loaded auth route: ./routes/auth.js');
-const movieRoutes = require('./routes/movies');
-const userRoutes = require('./routes/user');
-const { errorHandler } = require('./middleware/errorHandler');
+// Middleware
+import { errorHandler } from "./middleware/errorHandler.js";
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
-// Security middleware
+// Ensure JWT secret
+if (!process.env.JWT_SECRET) {
+  console.warn(
+    "[WARN] JWT_SECRET is not set. Using a temporary development fallback."
+  );
+  process.env.JWT_SECRET = "dev_fallback_secret_change_me";
+}
+
+// =======================
+// SECURITY & MIDDLEWARE
+// =======================
 app.use(helmet());
 
-// CORS configuration
-app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    credentials: true,
+  })
+);
 
-// Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: "Too many requests from this IP, please try again later.",
 });
-app.use('/api/', limiter);
 
-// Logging middleware
-app.use(morgan('combined'));
+app.use("/api/", limiter);
 
-// Compression middleware
+app.use(morgan("combined"));
 app.use(compression());
 
-// Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+// =======================
+// HEALTH CHECK
+// =======================
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "OK",
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
   });
 });
 
-// Serve static files (profile pictures)
-app.use('/uploads', express.static('uploads'));
+// Static uploads
+app.use("/uploads", express.static("uploads"));
 
-// API routes
-app.use('/api/auth', authRoutes);
-app.use('/api/movies', movieRoutes);
-app.use('/api/user', userRoutes);
+// =======================
+// ROUTES
+// =======================
+console.log("Loaded auth route: ./routes/auth.js");
 
-// 404 handler (use a safe regexp instead of "*" to avoid path-to-regexp issues)
-app.use(/.*/, (req, res) => {
-  res.status(404).json({ 
-    error: 'Route not found',
-    path: req.originalUrl 
+app.use("/api/auth", authRoutes);
+app.use("/api/movies", movieRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/watchlist", watchlistRoutes);
+
+// =======================
+// 404 HANDLER
+// =======================
+app.use((req, res) => {
+  res.status(404).json({
+    error: "Route not found",
+    path: req.originalUrl,
   });
 });
 
-// Error handling middleware
+// =======================
+// ERROR HANDLER
+// =======================
 app.use(errorHandler);
 
-// Connect to MongoDB (optional in dev, but recommended)
+// =======================
+// START SERVER
+// =======================
 const startServer = async () => {
   try {
     if (MONGO_URI) {
-      await mongoose.connect(MONGO_URI, { dbName: process.env.MONGO_DB || 'the_movie_site' });
-      console.log('🗄️  Connected to MongoDB');
+      await mongoose.connect(MONGO_URI, {
+        dbName: process.env.MONGO_DB || "the_movie_site",
+      });
+      console.log("🗄️  Connected to MongoDB");
     } else {
-      console.warn('[WARN] MONGO_URI not set. Running without database. Set it in server/.env to enable persistence.');
+      console.warn(
+        "[WARN] MONGO_URI not set. Running without database."
+      );
     }
 
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
-      console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
-      console.log(`🔗 Client URL: ${process.env.CLIENT_URL || 'http://localhost:3000'}`);
+      console.log(
+        `📊 Health check: http://localhost:${PORT}/api/health`
+      );
     });
   } catch (err) {
-    console.error('Failed to start server:', err);
+    console.error("Failed to start server:", err);
     process.exit(1);
   }
 };
 
 startServer();
 
-module.exports = app;
+export default app;

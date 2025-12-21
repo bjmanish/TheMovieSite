@@ -4,7 +4,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
-
+const Watchlist = require('../models/watchlist');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 router.post('/signup', async (req, res) => {
@@ -27,5 +27,7 @@ router.post('/login', async (req, res) => {
   const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '7d' });
   res.json({ token });
 });
+
+
 
 module.exports = router;

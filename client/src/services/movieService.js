@@ -17,6 +17,7 @@ const tmdbApiCall = async (endpoint, params = {}) => {
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`TMDB API error: ${response.status} ${response.statusText}`);
+      // console.error(`TMDB API error: ${response.status} ${response.statusText}`);
     }
     return await response.json();
   } catch (error) {
@@ -41,7 +42,7 @@ export const searchMovies = async (query, page = 1) => {
     const data = await tmdbApiCall('/search/movie', { 
       query, 
       page, 
-      language: 'en-US', 
+      // language: 'en-US', 
       include_adult: false 
     });
     return { success: true, data };
@@ -54,7 +55,7 @@ export const searchMovies = async (query, page = 1) => {
 export const getMovieDetails = async (id) => {
   try {
     const data = await tmdbApiCall(`/movie/${id}`, { 
-      language: 'en-US', 
+      // language: 'en-US', 
       append_to_response: 'credits,videos,images' 
     });
     return { success: true, data };
@@ -76,7 +77,7 @@ export const getTopRatedMovies = async (page = 1) => {
 // Get upcoming movies
 export const getUpcomingMovies = async (page = 1) => {
   try {
-    const data = await tmdbApiCall('/movie/upcoming', { page, language: 'en-US' });
+    const data = await tmdbApiCall('/movie/upcoming', { page});
     return { success: true, data };
   } catch (error) {
     return { success: false, error: error.message };

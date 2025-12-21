@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import AddToWatchlist from '../components/AddToWatchlist.jsx';
 import { getMovieDetails } from '../services/movieService';
 
 const MovieDetails = () => {
@@ -60,6 +61,9 @@ const MovieDetails = () => {
           >
             Download Link
           </a>
+
+        <AddToWatchlist movieId={movie.id} />
+
         </div>
         {/* Movie Details */}
         <div className="flex-1">

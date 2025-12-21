@@ -6,7 +6,8 @@ import './index.css';
 import Footer from './components/Footer';
 import LoadingSpinner from './components/LoadingSpinner';
 import Navbar from './components/Navbar';
-import './index.css';
+import AddToWatchlist from './pages/Watchlist';
+
 // Pages
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -66,7 +67,10 @@ function App() {
               path="/profile" 
               element={
                 user?.isAuthenticated ? (
+                  <>
                   <ProfilePage user={user} setUser={setUser} />
+                  <AddToWatchlist id={user.id} />
+                  </>
                 ) : (
                   <Navigate to="/login" replace />
                 )
