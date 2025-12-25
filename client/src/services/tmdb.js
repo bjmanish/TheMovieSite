@@ -4,7 +4,7 @@ import axios from 'axios';
 const ACCESS_TOKEN = process.env.TMDB_ACCESS_TOKEN; // for CRA (Create React App)
 
 const tmdb = axios.create({
-  baseURL: 'https://api.themoviedb.org/3',
+  baseURL: process.env.TMDB_BASE_URL,
   headers: {
     Authorization: `Bearer ${ACCESS_TOKEN}`,
   },

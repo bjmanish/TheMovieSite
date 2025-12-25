@@ -62,7 +62,7 @@ const MovieDetails = () => {
             Download Link
           </a>
 
-        <AddToWatchlist movieId={movie.id} />
+        <AddToWatchlist movieId={movie.id} isLoggedIn={true} token={localStorage.getItem('token')} />
 
         </div>
         {/* Movie Details */}

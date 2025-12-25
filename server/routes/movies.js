@@ -1,6 +1,5 @@
-const express = require('express');
-const axios = require('axios');
-const { auth } = require('../middleware/auth');
+import axios from 'axios';
+import express from 'express';
 
 const router = express.Router();
 
@@ -317,4 +316,4 @@ router.get('/genre/:genreId', checkTMDBConfig, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

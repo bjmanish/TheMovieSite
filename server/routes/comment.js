@@ -1,9 +1,10 @@
 // routes/comments.js
-const express = require('express');
+import express from 'express';
+import { auth } from '../middleware/auth.js';
+import Comment from '../models/comments.js';
+import User from '../models/user.js';
+
 const router = express.Router();
-const Comment = require('../models/comment');
-const auth = require('../middleware/auth');
-const User = require('../models/user');
 
 // Add a comment
 router.post('/', auth, async (req, res) => {
@@ -26,4 +27,4 @@ router.get('/:movieId', async (req, res) => {
   res.json(comments);
 });
 
-module.exports = router;
+export default router;

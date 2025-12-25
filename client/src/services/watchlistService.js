@@ -1,36 +1,31 @@
-import { apiClient, SERVER_ENDPOINTS } from "../config/api";
+import { apiClient } from "../config/api";
 
 export const watchlistService = {
-  // Add movie to watchlist
-  addToWatchlist: async ({ movieId, title, poster }) => {
+  addToWatchlist: async (movieData) => {
+    const token = localStorage.getItem("token");
+
     const res = await apiClient.post(
-      SERVER_ENDPOINTS.WATCHLIST.ADD,
-      { movieId, title, poster }
+      "/watchlist/add",
+      movieData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
+
     return res.data;
   },
 
-  // Get user watchlist
   getWatchlist: async () => {
-    const res = await apiClient.get(
-      SERVER_ENDPOINTS.WATCHLIST.GET
-    );
+    const token = localStorage.getItem("token");
+
+    const res = await apiClient.get("/watchlist", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
     return res.data;
   },
-
-  // Remove from watchlist
-  removeFromWatchlist: async (movieId) => {
-    const res = await apiClient.delete(
-      SERVER_ENDPOINTS.WATCHLIST.REMOVE(movieId)
-    );
-    return res.data;
-  },
-
-  // Check if movie exists in watchlist
-  isInWatchlist: async (movieId) => {
-    const res = await apiClient.get(
-      SERVER_ENDPOINTS.WATCHLIST.CHECK(movieId)
-    );
-    return res.data;
-  }
 };

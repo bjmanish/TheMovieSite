@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const watchlistSchema = new mongoose.Schema(
   {
@@ -6,24 +6,18 @@ const watchlistSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      unique: true, // one watchlist per user
     },
     movies: [
       {
-        movieId: {
-          type: String, // TMDB ID or your movie _id
-          required: true,
-        },
+        movieId: { type: String, required: true },
         title: String,
         poster: String,
-        addedAt: {
-          type: Date,
-          default: Date.now,
-        },
       },
     ],
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Watchlist", watchlistSchema);
+const Watchlist = mongoose.model("watchlist", watchlistSchema);
+
+export default Watchlist;

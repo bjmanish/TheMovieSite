@@ -1,50 +1,50 @@
 import { useState } from "react";
-import { apiClient } from '../config/api';
+import { watchlistService } from "../services/watchlistService";
 
-const AddToWatchlist = ({isLoggedIn, movieId }) => {
-
-  const [loading, setLoading] = useState(true);
-  const [added, setAdded] = useState(true);
+const AddToWatchlist = ({ movie }) => {
+  const [loading, setLoading] = useState(false);
+  const [added, setAdded] = useState(false);
 
   const handleAddToWatchlist = async () => {
-    if (!isLoggedIn) {
-      alert('Please log in to add this movie to your watchlist');
-      // return;
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("Please login first");
+      return;
     }
+
     try {
-      const res = await apiClient.post('/watchlist/add', { movieId });
-      alert('Movie added to watchlist!');
+      setLoading(true);
+
+      const res = await watchlistService.addToWatchlist({
+        movieId: movie.id,
+        title: movie.title,
+        poster: movie.poster_path,
+      });
+
+      if (res.success) {
+        setAdded(true);
+        alert("Movie added to watchlist!");
+      } else {
+        alert(res.message || "Failed");
+      }
     } catch (err) {
       console.error(err);
-      alert('Failed to add movie to watchlist');
+      alert(err || "Unauthorized");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <a
-      // href="#"
-      onClick={(e) => {
-        e.preventDefault();
-        if (!localStorage.getItem("token")) {
-          alert("Please login first");
-          return;
-        }
-        handleAddToWatchlist();
-      }}
-      className={`block mt-2 text-center px-4 py-2 rounded transition-colors duration-200
-        ${
-          added
-            ? "bg-green-600 cursor-not-allowed"
-            : "bg-blue-600 hover:bg-blue-700"
-        }
-        text-white`}
-      >
-      {loading
-        ? "Adding..."
-        : added
-        ? "Added ✓"
-        : "Add To WatchList"}
-    </a>
+    <button
+      onClick={handleAddToWatchlist}
+      disabled={loading || added}
+      className={`w-full mt-2 px-4 py-2 rounded text-white
+        ${added ? "bg-green-600" : "bg-blue-600 hover:bg-blue-700"}`}
+    >
+      {loading ? "Adding..." : added ? "Added ✓" : "Add to Watchlist"}
+    </button>
   );
 };
 

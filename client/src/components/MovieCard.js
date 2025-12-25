@@ -1,6 +1,5 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-
+import AddToWatchlist from './AddToWatchlist';
 const MovieCard = ({ movie }) => {
   const formatDate = (dateString) => {
     if (!dateString) return 'Unknown';
@@ -14,6 +13,8 @@ const MovieCard = ({ movie }) => {
   };
 
   return (
+    <>
+    <div className="mt-2">
     <Link to={`/movie/${movie.id}`} className="group">
       <div className="relative overflow-hidden rounded-lg bg-gray-800 hover:bg-gray-700 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
         {/* Movie Poster */}
@@ -72,6 +73,11 @@ const MovieCard = ({ movie }) => {
         <div className="absolute inset-0 border-2 border-purple-500/0 group-hover:border-purple-500/50 rounded-lg transition-all duration-300 pointer-events-none"></div>
       </div>
     </Link>
+    
+      <AddToWatchlist movie={movie} isLoggedIn={true} />
+    </div>
+
+    </>
   );
 };
 

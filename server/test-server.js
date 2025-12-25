@@ -1,6 +1,7 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
+import cors from 'cors';
+import dotenv from 'dotenv';
+import express from 'express';
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -30,4 +31,4 @@ app.listen(PORT, () => {
   console.log(`🔗 Test endpoint: http://localhost:${PORT}/api/test`);
 });
 
-module.exports = app;
+export default app;

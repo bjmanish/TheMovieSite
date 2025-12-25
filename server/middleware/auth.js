@@ -1,12 +1,13 @@
 // middleware/auth.js
-const jwt = require('jsonwebtoken');
-const { promisify } = require('util');
+import jwt from 'jsonwebtoken';
+import { promisify } from 'util';
 
-const auth = async (req, res, next) => {
+export  const auth = async (req, res, next) => {
   try {
     // Get token from header
     const authHeader = req.headers.authorization;
-    
+    console.log("AUTH HEADER:", authHeader);
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({
         success: false,
@@ -20,14 +21,19 @@ const auth = async (req, res, next) => {
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
     
     // Add user info to request
-    req.user = decoded;
+    req.user = {
+      id: decoded.id || decoded._id,
+    };
     next();
   } catch (error) {
-    return res.status(401).json({
+    console.error('Auth Middleware Error:', error);
+     res.status(401).json({
       success: false,
       error: 'Invalid token.'
     });
   }
 };
 
-module.exports = { auth };
+// module.exports = {auth};
+
+

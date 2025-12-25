@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getToken } from './authService';
 
-const API = 'http://localhost:5000/api/comments';
+const API = process.env.REACT_APP_API_URL.replace(/\/$/, '') + '/comments';
 
 export const fetchComments = async (movieId) => {
   const res = await axios.get(`${API}/${movieId}`);

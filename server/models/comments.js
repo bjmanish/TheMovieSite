@@ -1,5 +1,5 @@
-// models/Comment.js
-const mongoose = require('mongoose');
+// models/comments.js
+import mongoose from 'mongoose';
 
 const commentSchema = new mongoose.Schema({
   movieId: Number,
@@ -9,4 +9,5 @@ const commentSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Comment', commentSchema);
+const Comment = mongoose.model('Comment', commentSchema);
+export default Comment;

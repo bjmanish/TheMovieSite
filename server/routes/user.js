@@ -1,13 +1,17 @@
 // routes/user.js
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-const { body, validationResult } = require('express-validator');
-const twilio = require('twilio');
+import express from 'express';
+import { body, validationResult } from 'express-validator';
+import fs from 'fs';
+import multer from 'multer';
+import path from 'path';
+import twilio from 'twilio';
+import { fileURLToPath } from 'url';
+import { auth } from '../middleware/auth.js';
+import User from '../models/user.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const router = express.Router();
-const User = require('../models/user');
-const { auth } = require('../middleware/auth');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -269,4 +273,4 @@ router.post('/verify-mobile', auth, [
   }
 });
 
-module.exports = router;
+export default router;

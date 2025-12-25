@@ -1,6 +1,6 @@
 import express from "express";
 import { auth } from "../middleware/auth.js";
-import Watchlist from "../models/Watchlist.js";
+import Watchlist from "../models/watchlist.js";
 
 const router = express.Router();
 
@@ -17,14 +17,19 @@ router.post("/add", auth, async (req, res) => {
         message: "movieId is required",
       });
     }
- console.log("AUTH USER:", req.user);
-    let watchlist = await Watchlist.findOne({ user: req.user.id });
-    console.log("AUTH USER:", req.user);
+
+    if(!req.user || !req.user.id) {
+      return res.status(401).json({
+        success: false,
+        message: "User not authenticated",
+      });
+    }
+
+    let watchlist = await Watchlist.findOne({ user: req.user.id || req.user._id });
 
     if (!watchlist) {
-
       watchlist = await Watchlist.create({
-        user: req.user.id,
+        user: req.user.id || req.user._id,
         movies: [],
       });
     }
@@ -40,7 +45,12 @@ router.post("/add", auth, async (req, res) => {
       });
     }
 
-    watchlist.movies.push({ movieId, title, poster });
+    watchlist.movies.push({
+      movieId,
+      title,
+      poster
+    });
+
     await watchlist.save();
 
     res.status(201).json({
@@ -50,13 +60,13 @@ router.post("/add", auth, async (req, res) => {
     });
   } catch (error) {
     console.error("Add Watchlist Error:", error);
-    console.log(error);
     res.status(500).json({
       success: false,
-      message: "Server error",
+      message: error.message || "Server error",
     });
   }
 });
+
 
 /* ============================
    GET WATCHLIST

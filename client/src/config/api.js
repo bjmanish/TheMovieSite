@@ -31,7 +31,7 @@ export const SERVER_ENDPOINTS = {
 
 // TMDB API configuration
 export const TMDB_CONFIG = {
-  BASE_URL: 'https://api.themoviedb.org/3',
+  BASE_URL: process.env.REACT_APP_TMDB_BASE_URL ,
   ACCESS_TOKEN: TMDB_ACCESS_TOKEN
 };
 
@@ -39,31 +39,23 @@ export const TMDB_CONFIG = {
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  // headers: {
+  //   'Content-Type': 'application/json'
+  // }
 });
 
 // Request interceptor to add auth token
-apiClient.interceptors.request.use(
-  (config) => {
-    let token = null;
-    if (typeof window !== 'undefined') {
-      try {
-        token = localStorage.getItem('token');
-      } catch (e) {
-        token = null;
+  apiClient.interceptors.request.use(
+    (config) => {
+      const token = localStorage.getItem("token");
+      console.log("token:",token);
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
       }
-    }
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+
+      return config;
+    } 
+  );
 
 // Response interceptor for error handling
 apiClient.interceptors.response.use(

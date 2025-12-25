@@ -1,10 +1,9 @@
-// routes/auth.js
-const express = require('express');
+import bcrypt from 'bcryptjs';
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import User from '../models/user.js';
+
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const User = require('../models/user');
-const Watchlist = require('../models/watchlist');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 router.post('/signup', async (req, res) => {
@@ -28,6 +27,4 @@ router.post('/login', async (req, res) => {
   res.json({ token });
 });
 
-
-
-module.exports = router;
+export default router;

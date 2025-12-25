@@ -1,17 +1,39 @@
-import React, { useEffect, useState } from 'react';
+import axios from "axios";
+import { useEffect, useRef, useState } from "react";
 import { Link } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import MovieCard from '../components/MovieCard';
 import { getPopularMovies, getTopRatedMovies, getUpcomingMovies } from '../services/movieService';
-
 const HomePage = () => {
+  const [page, setPage] = useState([]);
   const [popularMovies, setPopularMovies] = useState([]);
   const [topRatedMovies, setTopRatedMovies] = useState([]);
   const [upcomingMovies, setUpcomingMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [watchlistMovies, setWatchlistMovies] = useState([]);
+  const token = localStorage.getItem("token");
+  const isLoggedIn = !!token;
+  // console.log("Token:", token);
+
+  const popularRef = useRef(null);
+
+  const scrollLeft = () => {
+    popularRef.current.scrollBy({
+      left: -300,
+      behavior: "smooth",
+    });
+  };
+  const scrollRight = () => {
+    popularRef.current.scrollBy({
+      left: 300,
+      behavior: "smooth",
+    });
+  };
 
   useEffect(() => {
+
+
     const fetchMovies = async () => {
       try {
         setLoading(true);
@@ -32,8 +54,33 @@ const HomePage = () => {
       }
     };
 
+    const fetchWatchlist = async () => {
+      if (!isLoggedIn) return;
+      
+      try {
+        const res = await axios.get(
+          process.env.REACT_APP_API_URL.replace(/\/$/, '') + '/watchlist',
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const movies =
+        Array.isArray(res.data)
+          ? res.data
+          : res.data.data || res.data.watchlist || [];
+      
+        setWatchlistMovies(movies);
+      } catch (err) {
+        console.error("Failed to fetch watchlist", err);
+        setWatchlistMovies([]); 
+      }
+    };
+
     fetchMovies();
-  }, []);
+    fetchWatchlist();
+  }, [isLoggedIn, token]);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -99,8 +146,43 @@ const HomePage = () => {
         </div>
       </section>
 
+      {/* WatchList if user Logged In Section */}
+      {isLoggedIn && (
+        <section>
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold text-white">
+              WatchList Movies
+            </h2>
+      
+            <Link
+              to="/watchlist"
+              className="text-purple-400 hover:text-purple-300 transition-colors duration-200"
+            >
+              View All →
+            </Link>
+          </div>
+      
+          {watchlistMovies.length === 0 ? (
+            <p className="text-gray-400">
+              Your watchlist is empty 🎬
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+              {watchlistMovies.map((movie) => (
+                <MovieCard
+                  key={movie._id || movie.id}
+                  movie={movie}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
+
+
       {/* Popular Movies Section */}
-      <section>
+      <section className="relative">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-3xl font-bold text-white">Popular Movies</h2>
           <Link
@@ -110,12 +192,44 @@ const HomePage = () => {
             View All →
           </Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+
+        {/* Left Button */}
+        <button
+          onClick={scrollLeft}
+          className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10
+            bg-black/60 hover:bg-black/80 text-white p-3 rounded-full"
+        >
+          ◀
+        </button>
+
+        {/* Movies Container */}
+        <div
+          ref={popularRef}
+          className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth"
+        >
           {popularMovies.map((movie) => (
-            <MovieCard key={movie.id} movie={movie} />
+            <div key={movie.id} className="min-w-[220px]">
+              <MovieCard movie={movie} />
+            </div>
           ))}
         </div>
+        
+        {/* Right Button */}
+        <button
+          onClick={scrollRight}
+          className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10
+            bg-black/60 hover:bg-black/80 text-white p-3 rounded-full"
+        >
+          ▶
+        </button>
       </section>
+        {/* <PaginationControls  page={page}
+          totalPages={totalPages}
+          onPageChange={(newPage) => {
+            setPage(newPage);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        /> */}
 
       {/* Top Rated Movies Section */}
       <section>

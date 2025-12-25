@@ -26,10 +26,11 @@ const LoginPage = ({ setUser }) => {
 
     try {
       const response = await login(formData.email, formData.password);
+      localStorage.setItem("token", response.token);
       setUser({ isAuthenticated: true, ...response.user });
       navigate('/');
     } catch (err) {
-      setError('Login failed. Please try again.' || err.message);
+      setError('Login failed. Please try again.' || err.response?.data?.message);
     } finally {
       setLoading(false);
     }

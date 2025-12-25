@@ -13,13 +13,12 @@ export const updateProfile = async (profileData) => {
 
 export const uploadProfilePicture = async (file) => {
   const formData = new FormData();
-  formData.append('profilePicture', file);
-  
-  const res = await apiClient.post('/user/profile-picture', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
+  formData.append("image", file);
+
+  const res = await apiClient.post("/user/profile-picture", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
   });
+
   return res.data;
 };
 

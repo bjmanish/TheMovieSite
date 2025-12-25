@@ -1,14 +1,12 @@
-import express from "express";
-import cors from "cors";
-import helmet from "helmet";
-import morgan from "morgan";
 import compression from "compression";
-import rateLimit from "express-rate-limit";
-import dotenv from "dotenv";
-import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
-
-// Routes (ESM)
+import cors from "cors";
+import dotenv from "dotenv";
+import express from "express";
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
+import mongoose from "mongoose";
+import morgan from "morgan";
 import authRoutes from "./routes/auth.js";
 import movieRoutes from "./routes/movies.js";
 import userRoutes from "./routes/user.js";
@@ -22,7 +20,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
-
+// authRoutes is an Express router imported from ./routes/auth.js
 // Ensure JWT secret
 if (!process.env.JWT_SECRET) {
   console.warn(

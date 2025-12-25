@@ -1,7 +1,10 @@
-// Direct TMDB API calls (bypassing server due to network restrictions)
-const TMDB_API_KEY = 'ece985488c982715535011849742081f'; // Using working API key from FilmFusion
-const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-const TMDB_IMAGE_PATH = 'https://image.tmdb.org/t/p/w1280';
+const TMDB_API_KEY = process.env.REACT_APP_API_KEY; // Using working API key from FilmFusion
+const TMDB_BASE_URL = process.env.REACT_APP_TMDB_API_URL;
+const TMDB_IMAGE_PATH = process.env.REACT_APP_TMDB_IMAGE_BASE_URL;
+
+// console.log("TMDB_API_KEY:", TMDB_API_KEY);
+// console.log("TMDB_API_URL:", TMDB_BASE_URL);
+// console.log("TMDB_IMAGE_PATH:", TMDB_IMAGE_PATH);
 
 // Helper function to make TMDB API calls
 const tmdbApiCall = async (endpoint, params = {}) => {
@@ -11,7 +14,7 @@ const tmdbApiCall = async (endpoint, params = {}) => {
   });
   
   const url = `${TMDB_BASE_URL}${endpoint}?${queryParams}`;
-  console.log('Making TMDB API call to:', url);
+  // console.log('Making TMDB API call to:', url);
   
   try {
     const response = await fetch(url);
@@ -27,9 +30,9 @@ const tmdbApiCall = async (endpoint, params = {}) => {
 };
 
 // Get popular movies
-export const getPopularMovies = async (page = 1) => {
+export const getPopularMovies = async () => {
   try {
-    const data = await tmdbApiCall('/movie/popular', { page, language: 'en-US' });
+    const data = await tmdbApiCall('/movie/popular', {language: 'en-US' });
     return { success: true, data };
   } catch (error) {
     return { success: false, error: error.message };
