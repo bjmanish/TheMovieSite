@@ -1,39 +1,40 @@
-// middleware/auth.js
-import jwt from 'jsonwebtoken';
-import { promisify } from 'util';
+import jwt from "jsonwebtoken";
 
-export  const auth = async (req, res, next) => {
+export const auth = (req, res, next) => {
   try {
-    // Get token from header
     const authHeader = req.headers.authorization;
+
     console.log("AUTH HEADER:", authHeader);
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({
         success: false,
-        error: 'Access denied. No token provided.'
+        message: "No token provided",
       });
     }
 
-    const token = authHeader.split(' ')[1];
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Verify token
-    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-    
-    // Add user info to request
+    // ✅ FIX: SUPPORT userId
     req.user = {
-      id: decoded.id || decoded._id,
+      id: decoded.userId || decoded.id || decoded._id,
+      username: decoded.username,
     };
+
+    if (!req.user.id) {
+      console.error("JWT missing user id:", decoded);
+      return res.status(401).json({
+        success: false,
+        message: "Invalid token payload",
+      });
+    }
+
     next();
   } catch (error) {
-    console.error('Auth Middleware Error:', error);
-     res.status(401).json({
+    return res.status(401).json({
       success: false,
-      error: 'Invalid token.'
+      message: "Invalid or expired token",
     });
   }
 };
-
-// module.exports = {auth};
-
-

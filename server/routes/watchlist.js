@@ -1,14 +1,20 @@
 import express from "express";
 import { auth } from "../middleware/auth.js";
-import Watchlist from "../models/watchlist.js";
+import Watchlist from "../models/Watchlist.js";
 
 const router = express.Router();
 
-/* ============================
-   ADD TO WATCHLIST
-============================ */
+// ADD TO WATCHLIST
 router.post("/add", auth, async (req, res) => {
   try {
+    
+    if (!req.user?.id) {
+      return res.status(401).json({
+        success: false,
+        message: "User not authenticated",
+      });
+    }
+
     const { movieId, title, poster } = req.body;
 
     if (!movieId) {
@@ -18,24 +24,21 @@ router.post("/add", auth, async (req, res) => {
       });
     }
 
-    if(!req.user || !req.user.id) {
-      return res.status(401).json({
-        success: false,
-        message: "User not authenticated",
-      });
-    }
+    let watchlist = await Watchlist.findOne({
+      user: req.user.id,
+    });
 
-    let watchlist = await Watchlist.findOne({ user: req.user.id || req.user._id });
-
+    // Create watchlist if not exists
     if (!watchlist) {
       watchlist = await Watchlist.create({
-        user: req.user.id || req.user._id,
+        user: req.user.id,
         movies: [],
       });
     }
 
+    // Prevent duplicate movie
     const exists = watchlist.movies.some(
-      (movie) => movie.movieId === movieId
+      (m) => m.movieId === movieId
     );
 
     if (exists) {
@@ -45,79 +48,42 @@ router.post("/add", auth, async (req, res) => {
       });
     }
 
-    watchlist.movies.push({
-      movieId,
-      title,
-      poster
-    });
-
+    watchlist.movies.push({ movieId, title, poster });
     await watchlist.save();
 
     res.status(201).json({
       success: true,
       message: "Movie added to watchlist",
-      data: watchlist.movies,
+      movies: watchlist.movies,
     });
   } catch (error) {
     console.error("Add Watchlist Error:", error);
     res.status(500).json({
       success: false,
-      message: error.message || "Server error",
+      message: "Server error",
     });
   }
 });
 
-
-/* ============================
-   GET WATCHLIST
-============================ */
+// GET USER WATCHLIST
 router.get("/", auth, async (req, res) => {
   try {
-    const watchlist = await Watchlist.findOne({ user: req.user.id });
+    const watchlist = await Watchlist.findOne({
+      user: req.user.id,
+    });
 
     res.status(200).json({
       success: true,
-      data: watchlist ? watchlist.movies : [],
+      movies: watchlist ? watchlist.movies : [],
     });
   } catch (error) {
+    console.error("Fetch Watchlist Error:", error);
     res.status(500).json({
       success: false,
-      message: "Server error",
+      message: "Failed to fetch watchlist",
     });
   }
 });
 
-/* ============================
-   REMOVE FROM WATCHLIST
-============================ */
-router.delete("/remove/:movieId", auth, async (req, res) => {
-  try {
-    const watchlist = await Watchlist.findOne({ user: req.user.id });
-
-    if (!watchlist) {
-      return res.status(404).json({
-        success: false,
-        message: "Watchlist not found",
-      });
-    }
-
-    watchlist.movies = watchlist.movies.filter(
-      (movie) => movie.movieId !== req.params.movieId
-    );
-
-    await watchlist.save();
-
-    res.status(200).json({
-      success: true,
-      message: "Movie removed from watchlist",
-      data: watchlist.movies,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
-  }
-});
 
 export default router;

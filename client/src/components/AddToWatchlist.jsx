@@ -4,10 +4,19 @@ import { watchlistService } from "../services/watchlistService";
 const AddToWatchlist = ({ movie }) => {
   const [loading, setLoading] = useState(false);
   const [added, setAdded] = useState(false);
+console.log("MOVIE PROP:", movie);
 
   const handleAddToWatchlist = async () => {
-    const token = localStorage.getItem("token");
+    const movieId =
+  movie?.id || movie?._id || movie?.movie?.id;
 
+if (!movieId) {
+  console.error("Invalid movie object:", movie);
+  alert("Movie data not available yet");
+  return;
+}
+
+    const token = localStorage.getItem("token");
     if (!token) {
       alert("Please login first");
       return;
@@ -18,7 +27,7 @@ const AddToWatchlist = ({ movie }) => {
 
       const res = await watchlistService.addToWatchlist({
         movieId: movie.id,
-        title: movie.title,
+        title: movie.title || movie.name,
         poster: movie.poster_path,
       });
 
@@ -30,7 +39,7 @@ const AddToWatchlist = ({ movie }) => {
       }
     } catch (err) {
       console.error(err);
-      alert(err || "Unauthorized");
+      alert(err.response?.data?.message || "Server error");
     } finally {
       setLoading(false);
     }
@@ -40,8 +49,7 @@ const AddToWatchlist = ({ movie }) => {
     <button
       onClick={handleAddToWatchlist}
       disabled={loading || added}
-      className={`w-full mt-2 px-4 py-2 rounded text-white
-        ${added ? "bg-green-600" : "bg-blue-600 hover:bg-blue-700"}`}
+      className="w-full mt-2 px-4 py-2 rounded text-white bg-blue-600 hover:bg-blue-700"
     >
       {loading ? "Adding..." : added ? "Added ✓" : "Add to Watchlist"}
     </button>

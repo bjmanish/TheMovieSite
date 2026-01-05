@@ -1,9 +1,10 @@
-import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { Link } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import MovieCard from '../components/MovieCard';
 import { getPopularMovies, getTopRatedMovies, getUpcomingMovies } from '../services/movieService';
+import { watchlistService } from "../services/watchlistService";
+
 const HomePage = () => {
   const [page, setPage] = useState([]);
   const [popularMovies, setPopularMovies] = useState([]);
@@ -11,7 +12,8 @@ const HomePage = () => {
   const [upcomingMovies, setUpcomingMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [watchlistMovies, setWatchlistMovies] = useState([]);
+  const [watchlistMovies, setWatchlist] = useState([]);
+  // const [watchlist, setWatchlist] = useState([]);
   const token = localStorage.getItem("token");
   const isLoggedIn = !!token;
   // console.log("Token:", token);
@@ -55,28 +57,13 @@ const HomePage = () => {
     };
 
     const fetchWatchlist = async () => {
-      if (!isLoggedIn) return;
-      
-      try {
-        const res = await axios.get(
-          process.env.REACT_APP_API_URL.replace(/\/$/, '') + '/watchlist',
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const movies =
-        Array.isArray(res.data)
-          ? res.data
-          : res.data.data || res.data.watchlist || [];
-      
-        setWatchlistMovies(movies);
-      } catch (err) {
-        console.error("Failed to fetch watchlist", err);
-        setWatchlistMovies([]); 
-      }
-    };
+  try {
+    const res = await watchlistService.getWatchlist();
+    setWatchlist(res.movies || []);
+  } catch (error) {
+    console.error("Failed to fetch watchlist", error);
+  }
+};
 
     fetchMovies();
     fetchWatchlist();

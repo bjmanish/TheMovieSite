@@ -62,7 +62,15 @@ const MovieDetails = () => {
             Download Link
           </a>
 
-        <AddToWatchlist movieId={movie.id} isLoggedIn={true} token={localStorage.getItem('token')} />
+        <AddToWatchlist
+          movie={{
+            id: movie.id || movie._id,
+            title: movie.title || movie.name,
+            poster: movie.poster_path || movie.poster,
+          }}
+          isLoggedIn={true} 
+          token={localStorage.getItem('token')} 
+        />
 
         </div>
         {/* Movie Details */}

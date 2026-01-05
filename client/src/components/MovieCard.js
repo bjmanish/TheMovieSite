@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import AddToWatchlist from './AddToWatchlist';
 const MovieCard = ({ movie }) => {
   const formatDate = (dateString) => {
     if (!dateString) return 'Unknown';
@@ -73,8 +72,8 @@ const MovieCard = ({ movie }) => {
         <div className="absolute inset-0 border-2 border-purple-500/0 group-hover:border-purple-500/50 rounded-lg transition-all duration-300 pointer-events-none"></div>
       </div>
     </Link>
-    
-      <AddToWatchlist movie={movie} isLoggedIn={true} />
+
+      {/* <AddToWatchlist movie={movie} isLoggedIn={localStorage.getItem('token')} /> */}
     </div>
 
     </>
