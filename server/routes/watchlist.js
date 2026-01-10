@@ -1,6 +1,6 @@
 import express from "express";
 import { auth } from "../middleware/auth.js";
-import Watchlist from "../models/Watchlist.js";
+import Watchlist from "../models/watchlist.js";
 
 const router = express.Router();
 
@@ -84,6 +84,58 @@ router.get("/", auth, async (req, res) => {
     });
   }
 });
+
+// REMOVE MOVIE FROM WATCHLIST
+router.delete("/remove/:movieId", auth, async (req, res) => {
+  try {
+    const { movieId } = req.params;
+
+    if (!req.user?.id) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    const watchlist = await Watchlist.findOne({ user: req.user.id });
+
+    if (!watchlist) {
+      return res.status(404).json({
+        success: false,
+        message: "Watchlist not found",
+      });
+    }
+
+    const initialLength = watchlist.movies.length;
+
+    // ✅ IMPORTANT PART
+    watchlist.movies = watchlist.movies.filter(
+      (movie) => movie.movieId !== movieId
+    );
+
+    if (watchlist.movies.length === initialLength) {
+      return res.status(404).json({
+        success: false,
+        message: "Movie not found in watchlist",
+      });
+    }
+
+    await watchlist.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Movie removed from watchlist",
+      movies: watchlist.movies,
+    });
+  } catch (error) {
+    console.error("Remove Watchlist Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
+
 
 
 export default router;

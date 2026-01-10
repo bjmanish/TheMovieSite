@@ -6,8 +6,6 @@ import './index.css';
 import Footer from './components/Footer';
 import LoadingSpinner from './components/LoadingSpinner';
 import Navbar from './components/Navbar';
-import AddToWatchlist from './pages/Watchlist';
-
 // Pages
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -16,7 +14,7 @@ import MovieDetails from './pages/MovieDetailPage';
 import ProfilePage from './pages/ProfilePage';
 import RegisterPage from './pages/RegisterPage';
 import SearchPage from './pages/SearchPage';
-
+import Watchlist from './pages/Watchlist.jsx';
 // Services
 import { getProfile, isAuthenticated } from './services/authServices';
 
@@ -69,7 +67,7 @@ function App() {
                 user?.isAuthenticated ? (
                   <>
                   <ProfilePage user={user} setUser={setUser} />
-                  <AddToWatchlist id={user.id} />
+                  <Watchlist id={user.id} />
                   </>
                 ) : (
                   <Navigate to="/login" replace />

@@ -28,7 +28,7 @@ if (!movieId) {
       const res = await watchlistService.addToWatchlist({
         movieId: movie.id,
         title: movie.title || movie.name,
-        poster: movie.poster_path,
+        poster: movie.poster,
       });
 
       if (res.success) {

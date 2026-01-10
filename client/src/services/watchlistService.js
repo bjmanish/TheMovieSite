@@ -10,7 +10,15 @@ export const watchlistService = {
   },
 
   getWatchlist: async () => {
-  const res = await apiClient.get("/watchlist");
-  return res.data;
-}
+    const res = await apiClient.get("/watchlist");
+    return res.data;
+  },
+
+  removeFromWatchlist : async (movieId) => {
+    const res = await apiClient.delete(
+      SERVER_ENDPOINTS.WATCHLIST.REMOVE,
+      { data: { movieId } }
+    );
+    return res.data;
+  } 
 };

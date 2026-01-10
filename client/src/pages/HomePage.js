@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import MovieCard from '../components/MovieCard';
+import WatchlistMovieCard from "../components/WatchlistMovieCard";
 import { getPopularMovies, getTopRatedMovies, getUpcomingMovies } from '../services/movieService';
 import { watchlistService } from "../services/watchlistService";
-
 const HomePage = () => {
   const [page, setPage] = useState([]);
   const [popularMovies, setPopularMovies] = useState([]);
@@ -156,7 +156,7 @@ const HomePage = () => {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
               {watchlistMovies.map((movie) => (
-                <MovieCard
+                <WatchlistMovieCard
                   key={movie._id || movie.id}
                   movie={movie}
                 />
