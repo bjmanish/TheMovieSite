@@ -6,7 +6,7 @@ import WatchlistMovieCard from "../components/WatchlistMovieCard";
 import { getPopularMovies, getTopRatedMovies, getUpcomingMovies } from '../services/movieService';
 import { watchlistService } from "../services/watchlistService";
 const HomePage = () => {
-  const [page, setPage] = useState([]);
+  // const [page, setPage] = useState([]);
   const [popularMovies, setPopularMovies] = useState([]);
   const [topRatedMovies, setTopRatedMovies] = useState([]);
   const [upcomingMovies, setUpcomingMovies] = useState([]);
@@ -57,17 +57,17 @@ const HomePage = () => {
     };
 
     const fetchWatchlist = async () => {
-  try {
-    const res = await watchlistService.getWatchlist();
-    setWatchlist(res.movies || []);
-  } catch (error) {
-    console.error("Failed to fetch watchlist", error);
-  }
-};
+      try {
+        const res = await watchlistService.getWatchlist();
+        setWatchlist(res.movies || []);
+      } catch (error) {
+        console.error("Failed to fetch watchlist", error);
+      }
+    };
 
     fetchMovies();
     fetchWatchlist();
-  }, [isLoggedIn, token]);
+  }, [isLoggedIn]);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -98,7 +98,7 @@ const HomePage = () => {
         
         {popularMovies[0] && (
           <img
-            src={`https://image.tmdb.org/t/p/original${popularMovies[0].backdrop_path}`}
+            src={process.env.REACT_APP_IMAGE_ORIGINAL_URL+popularMovies[0].backdrop_path}
             alt={popularMovies[0].title}
             className="w-full h-full object-cover"
           />

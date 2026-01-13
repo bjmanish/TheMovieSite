@@ -13,7 +13,7 @@ export default function MovieSlider({ title, movies }) {
               alt={movie.title}
             /> */}
             <Link to={`/movie/${movie.id}`}>
-                <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} />
+                <img src={process.env.REACT_APP_IMAGE_URL+movie.poster_path} alt={movie.title} />
             </Link>
             <p className="text-sm mt-2">{movie.title}</p>
           </div>

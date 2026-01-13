@@ -21,7 +21,9 @@ const WatchlistMovieCard = ({ movie, onRemove }) => {
           <div className="relative aspect-[2/3] overflow-hidden">
             {movie.poster ? (
               <img
-                src={`https://image.tmdb.org/t/p/w500${movie.poster}`}
+                // src={`https://image.tmdb.org/t/p/w500${movie.poster}`}
+                src = {process.env.REACT_APP_IMAGE_URL+movie.poster}
+
                 alt={movie.title}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                 loading="lazy"

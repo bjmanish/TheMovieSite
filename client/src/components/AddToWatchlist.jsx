@@ -4,7 +4,7 @@ import { watchlistService } from "../services/watchlistService";
 const AddToWatchlist = ({ movie }) => {
   const [loading, setLoading] = useState(false);
   const [added, setAdded] = useState(false);
-console.log("MOVIE PROP:", movie);
+// console.log("MOVIE PROP:", movie);
 
   const handleAddToWatchlist = async () => {
     const movieId =

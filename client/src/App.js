@@ -65,14 +65,21 @@ function App() {
               path="/profile" 
               element={
                 user?.isAuthenticated ? (
-                  <>
                   <ProfilePage user={user} setUser={setUser} />
-                  <Watchlist id={user.id} />
-                  </>
                 ) : (
-                  <Navigate to="/login" replace />
+                  <Navigate to="/" replace />
                 )
               } 
+            />
+            <Route
+              path="/watchlist"
+              element={
+                user?.isAuthenticated ? (
+                  <Watchlist user={user} setUser={setUser} />
+                ) : (
+                  <Navigate to="/" replace />
+                )
+              }
             />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

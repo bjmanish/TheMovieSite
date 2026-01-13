@@ -132,7 +132,8 @@ const ProfilePage = ({ user, setUser }) => {
         {/* Profile Picture */}
         <div className="relative mb-4">
           <img
-            src={user.profilePicture ? `http://localhost:5000${user.profilePicture}` : '/default-avatar.png'}
+            // src={user.profilePicture ? `http://localhost:5000${user.profilePicture}` : '/default-avatar.png'}
+            src={user.profilePicture ? process.env.REACT_APP_API_PROFILE_URL+user.profilePicture : '/default-avatar.png'}
             alt="Profile"
             className="w-24 h-24 rounded-full object-cover border-4 border-purple-400"
             onError={(e) => {

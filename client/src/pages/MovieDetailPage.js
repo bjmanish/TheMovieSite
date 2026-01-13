@@ -50,12 +50,12 @@ const MovieDetails = () => {
         {/* Movie Poster */}
         <div className="flex-shrink-0">
           <img
-            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+            src={process.env.REACT_APP_IMAGE_URL+movie.poster_path}
             alt={movie.title}
             className="rounded-lg shadow-lg mb-2 w-60"
           />
           <a
-            href={`https://taazabull24.com/homelander/`}
+            href={""+(movie.homepage || '#')}
             download target="_black"
             className="block mt-2 bg-blue-600 hover:bg-blue-700 text-white text-center px-4 py-2 rounded transition-colors duration-200"
           >
@@ -71,7 +71,7 @@ const MovieDetails = () => {
           isLoggedIn={true} 
           token={localStorage.getItem('token')} 
         />
-
+      {/* <br/><br/><br/> */}
         </div>
         {/* Movie Details */}
         <div className="flex-1">
@@ -98,12 +98,18 @@ const MovieDetails = () => {
             <li><strong>Revenue:</strong> ${movie.revenue?.toLocaleString()}</li>
             <li><strong>Tagline:</strong> <em>{movie.tagline}</em></li>
           </ul>
-          {trailer && (
+        </div>
+        
+      </div>
+
+      <div className="mt-8 ">
+      {/* ================= TRAILER (YOUTUBE STYLE) ================= */}
+      {trailer && (
             <div className="mb-0">
               <iframe
                 width="100%"
                 height="330"
-                src={`https://www.youtube.com/embed/${trailer.key}`}
+                src={process.env.REACT_APP_YOUTUBE + trailer.key}
                 title="Trailer"
                 frameBorder="0"
                 allowFullScreen
@@ -111,8 +117,8 @@ const MovieDetails = () => {
               />
             </div>
           )}
-        </div>
       </div>
+
       {/* Cast */}
       <h2 className="mt-8 font-bolder text-xl">Cast</h2>
       <ul className="flex-box gap-3 text-white overflow-x-auto pb-2">

@@ -20,7 +20,7 @@ const MovieCard = ({ movie }) => {
         <div className="relative aspect-[2/3] overflow-hidden">
           {movie.poster_path ? (
             <img
-              src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+              src={process.env.REACT_APP_IMAGE_URL+movie.poster_path}
               alt={movie.title}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
               loading="lazy"
